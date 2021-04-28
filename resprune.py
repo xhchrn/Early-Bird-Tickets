@@ -49,7 +49,8 @@ if args.dataset == 'imagenet':
     model = models.__dict__[args.arch](pretrained=False)
     # model = PreResNet(BasicBlock, [2, 2, 2, 2])
 else:
-    model = resnet(depth=args.depth, dataset=args.dataset)
+    model = models.__dict__[args.arch](dataset=args.dataset, depth=args.depth)
+    # model = resnet(depth=args.depth, dataset=args.dataset)
 
 if args.model:
     if os.path.isfile(args.model):
