@@ -161,7 +161,7 @@ class ResNet(nn.Module):
 
 
 def resnet_cifar(dataset='cifar10', depth=18):
-    assert dataset == 'cifar'
+    assert dataset == 'cifar10'
     if depth == 18:
         return ResNet18(init_method='kaiming_normal')
     elif depth == 34:
