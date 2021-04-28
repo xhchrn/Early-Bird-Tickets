@@ -21,7 +21,7 @@ __all__ = ['resnet_cifar']
 class BasicBlock(nn.Module):
     expansion = 1
 
-    def __init__(self, in_planes, planes, stride=1, cfg=None):
+    def __init__(self, in_planes, planes, stride=1, cfg=None, downsample=None):
         assert cfg is not None
         super(BasicBlock, self).__init__()
 
@@ -33,17 +33,20 @@ class BasicBlock(nn.Module):
         self.bn2 = nn.BatchNorm2d(planes)
 
         self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes)
-            )
+        self.downsample = downsample
+        # if stride != 1 or in_planes != self.expansion*planes:
+        #     self.shortcut = nn.Sequential(
+        #         nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
+        #         nn.BatchNorm2d(self.expansion*planes)
+        #     )
 
     def forward(self, x):
         out = self.select(x)
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
-        out += self.shortcut(x)
+        residual = self.downsample(x) if self.downsample else x
+        output += residual
+        # out += self.shortcut(x)
         out = F.relu(out)
         return out
 
@@ -164,11 +167,22 @@ class ResNet(nn.Module):
         return non_bop_params
 
     def _make_layer(self, block, planes, num_blocks, stride, cfg):
+        downsample = None
+        if stride != 1 or planes != block.expansion * planes:
+            downsample = nn.Sequential(
+                nn.Conv2d(planes, block.expansion * planes, kernel_size=1,
+                          stride=stride, bias=False),
+                nn.BatchNorm2d(block.expansion * planes)
+            )
+
         strides = [stride] + [1]*(num_blocks-1)
+
         layers = []
         for i, stride in enumerate(strides):
-            layers.append(block(self.in_planes, planes, stride, cfg[2*i:2*(i+1)]))
+            ds = downsample if i == 0 else None
+            layers.append(block(self.in_planes, planes, stride, cfg[2*i:2*(i+1)], ds))
             self.in_planes = planes * block.expansion
+
         return nn.Sequential(*layers)
 
     def forward(self, x):

@@ -112,7 +112,13 @@ class ResNet(nn.Module):
 
         if cfg is None:
             # Construct config variable (basic block)
-            cfg = [[64], [64, 64]*layers[0], [128, 128]*layers[1], [256, 256]*layers[2], [512, 512]* layers[3]]
+            cfg = [
+                [64],
+                [64, 64]*layers[0],
+                [128, 128]*layers[1],
+                [256, 256]*layers[2],
+                [512, 512]* layers[3]
+            ]
             cfg = [item for sub_list in cfg for item in sub_list]
 
         self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
