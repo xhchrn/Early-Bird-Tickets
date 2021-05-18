@@ -32,8 +32,9 @@ class BasicBlock(nn.Module):
         self.conv2 = nn.Conv2d(cfg[1], planes, kernel_size=3, stride=1, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(planes)
 
-        self.shortcut = nn.Sequential()
+        # self.shortcut = nn.Sequential()
         self.downsample = downsample
+        self.stride = stride
         # if stride != 1 or in_planes != self.expansion*planes:
         #     self.shortcut = nn.Sequential(
         #         nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
@@ -42,39 +43,13 @@ class BasicBlock(nn.Module):
 
     def forward(self, x):
         out = self.select(x)
+
         out = F.relu(self.bn1(self.conv1(x)))
         out = self.bn2(self.conv2(out))
+
         residual = self.downsample(x) if self.downsample else x
-        output += residual
-        # out += self.shortcut(x)
-        out = F.relu(out)
-        return out
 
-
-class Bottleneck(nn.Module):
-    expansion = 4
-
-    def __init__(self, in_planes, planes, stride=1):
-        super(Bottleneck, self).__init__()
-        self.conv1 = nn.Conv2d(in_planes, planes, kernel_size=1, bias=False)
-        self.bn1 = nn.BatchNorm2d(planes)
-        self.conv2 = nn.Conv2d(planes, planes, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn2 = nn.BatchNorm2d(planes)
-        self.conv3 = nn.Conv2d(planes, self.expansion*planes, kernel_size=1, bias=False)
-        self.bn3 = nn.BatchNorm2d(self.expansion*planes)
-
-        self.shortcut = nn.Sequential()
-        if stride != 1 or in_planes != self.expansion*planes:
-            self.shortcut = nn.Sequential(
-                nn.Conv2d(in_planes, self.expansion*planes, kernel_size=1, stride=stride, bias=False),
-                nn.BatchNorm2d(self.expansion*planes)
-            )
-
-    def forward(self, x):
-        out = F.relu(self.bn1(self.conv1(x)))
-        out = F.relu(self.bn2(self.conv2(out)))
-        out = self.bn3(self.conv3(out))
-        out += self.shortcut(x)
+        out += residual
         out = F.relu(out)
         return out
 
@@ -89,9 +64,6 @@ class ResNet(nn.Module):
             cfg = [
                 [64],
                 [64, 64] * num_blocks[0],
-                # [128, 128, 128], [128, 128]*(num_blocks[1]-1),
-                # [256, 256, 256], [256, 256]*(num_blocks[2]-1),
-                # [512, 512, 512], [512, 512]*(num_blocks[3]-1),
                 [128, 128] * num_blocks[1],
                 [256, 256] * num_blocks[2],
                 [512, 512] * num_blocks[3],
@@ -110,6 +82,11 @@ class ResNet(nn.Module):
         self.linear = nn.Linear(512*block.expansion, num_classes)
 
         self.reset_conv_parameters(init_method)
+
+        for m in self.modules():
+            if isinstance(m, nn.BatchNorm2d):
+                m.weight.data.fill_(1)
+                m.bias.data.zero_()
 
     def reset_parameters(self, module, init_method="kaiming_uniform") -> None:
         if init_method == "kaiming_constant_signed":
@@ -152,25 +129,11 @@ class ResNet(nn.Module):
             if isinstance(m, nn.Conv2d):
                 self.reset_parameters(m, init_method)
     
-    def get_bop_params(self):
-        bop_params = []
-        for m in self.modules():
-            if isinstance(m, nn.Conv2d):
-                bop_params += list(m.parameters())
-        return bop_params
-
-    def get_non_bop_params(self):
-        non_bop_params = []
-        for m in self.modules():
-            if isinstance(m, (nn.Linear, nn.BatchNorm2d,)):
-                non_bop_params += list(m.parameters())
-        return non_bop_params
-
     def _make_layer(self, block, planes, num_blocks, stride, cfg):
         downsample = None
         if stride != 1 or planes != block.expansion * planes:
             downsample = nn.Sequential(
-                nn.Conv2d(planes, block.expansion * planes, kernel_size=1,
+                nn.Conv2d(self.in_plains, block.expansion * planes, kernel_size=1,
                           stride=stride, bias=False),
                 nn.BatchNorm2d(block.expansion * planes)
             )
