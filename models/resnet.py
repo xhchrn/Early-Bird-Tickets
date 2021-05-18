@@ -133,7 +133,7 @@ class ResNet(nn.Module):
         downsample = None
         if stride != 1 or planes != block.expansion * planes:
             downsample = nn.Sequential(
-                nn.Conv2d(self.in_plains, block.expansion * planes, kernel_size=1,
+                nn.Conv2d(self.in_planes, block.expansion * planes, kernel_size=1,
                           stride=stride, bias=False),
                 nn.BatchNorm2d(block.expansion * planes)
             )
