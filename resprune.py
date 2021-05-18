@@ -206,7 +206,7 @@ if args.dataset == 'imagenet':
     # newmodel = PreResNet(BasicBlock, [2, 2, 2, 2], cfg=cfg)
 else:
     # newmodel = resnet(depth=args.depth, dataset=args.dataset, cfg=cfg)
-    model = models.__dict__[args.arch](dataset=args.dataset, depth=args.depth, cfg=cfg)
+    newmodel = models.__dict__[args.arch](dataset=args.dataset, depth=args.depth, cfg=cfg)
 
 if args.init != '':
     if os.path.isfile(args.init):
