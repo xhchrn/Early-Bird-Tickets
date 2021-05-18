@@ -376,12 +376,18 @@ class EarlyBird():
 
 best_prec1 = 0.
 flag_30 = True
+flag_40 = True
 flag_50 = True
+flag_60 = True
 flag_70 = True
+flag_80 = True
 flag_90 = True
 early_bird_30 = EarlyBird(0.3)
+early_bird_40 = EarlyBird(0.4)
 early_bird_50 = EarlyBird(0.5)
+early_bird_60 = EarlyBird(0.6)
 early_bird_70 = EarlyBird(0.7)
+early_bird_80 = EarlyBird(0.8)
 early_bird_90 = EarlyBird(0.9)
 for epoch in range(args.start_epoch, args.epochs):
     if early_bird_30.early_bird_emerge(model):
@@ -394,6 +400,16 @@ for epoch in range(args.start_epoch, args.epochs):
             'optimizer': optimizer.state_dict(),
             }, is_best, 'EB-30-'+str(epoch+1), filepath=args.save)
             flag_30 = False
+    if early_bird_40.early_bird_emerge(model):
+        print("[early_bird_40] Find EB!!!!!!!!!, epoch: "+str(epoch))
+        if flag_40:
+            save_checkpoint({
+            'epoch': epoch + 1,
+            'state_dict': model.state_dict(),
+            'best_prec1': best_prec1,
+            'optimizer': optimizer.state_dict(),
+            }, is_best, 'EB-40-'+str(epoch+1), filepath=args.save)
+            flag_40 = False
     if early_bird_50.early_bird_emerge(model):
         print("[early_bird_50] Find EB!!!!!!!!!, epoch: "+str(epoch))
         if flag_50:
@@ -404,6 +420,16 @@ for epoch in range(args.start_epoch, args.epochs):
             'optimizer': optimizer.state_dict(),
             }, is_best, 'EB-50-'+str(epoch+1), filepath=args.save)
             flag_50 = False
+    if early_bird_60.early_bird_emerge(model):
+        print("[early_bird_60] Find EB!!!!!!!!!, epoch: "+str(epoch))
+        if flag_60:
+            save_checkpoint({
+            'epoch': epoch + 1,
+            'state_dict': model.state_dict(),
+            'best_prec1': best_prec1,
+            'optimizer': optimizer.state_dict(),
+            }, is_best, 'EB-60-'+str(epoch+1), filepath=args.save)
+            flag_60 = False
     if early_bird_70.early_bird_emerge(model):
         print("[early_bird_70] Find EB!!!!!!!!!, epoch: "+str(epoch))
         if flag_70:
@@ -414,6 +440,16 @@ for epoch in range(args.start_epoch, args.epochs):
             'optimizer': optimizer.state_dict(),
             }, is_best, 'EB-70-'+str(epoch+1), filepath=args.save)
             flag_70 = False
+    if early_bird_80.early_bird_emerge(model):
+        print("[early_bird_80] Find EB!!!!!!!!!, epoch: "+str(epoch))
+        if flag_80:
+            save_checkpoint({
+            'epoch': epoch + 1,
+            'state_dict': model.state_dict(),
+            'best_prec1': best_prec1,
+            'optimizer': optimizer.state_dict(),
+            }, is_best, 'EB-80-'+str(epoch+1), filepath=args.save)
+            flag_80 = False
     if early_bird_90.early_bird_emerge(model):
         print("[early_bird_90] Find EB!!!!!!!!!, epoch: "+str(epoch))
         if flag_90:
