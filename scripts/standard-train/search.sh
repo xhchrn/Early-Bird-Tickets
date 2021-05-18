@@ -1,12 +1,13 @@
-CUDA_VISIBLE_DEVICES=0 python main.py \
---dataset cifar100 \
---arch vgg \
---depth 16 \
+CUDA_VISIBLE_DEVICES=2 python main.py \
+--dataset cifar10 \
+--arch resnet_cifar \
+--depth 18 \
 --lr 0.1 \
---epochs 160 \
+--epochs 60 \
 --schedule 80 120 \
 --batch-size 256 \
 --test-batch-size 256 \
---save ./baseline/vgg16-cifar100 \
+--save ./baseline/resnet18-cifar10 \
 --momentum 0.9 \
 --sparsity-regularization
+
