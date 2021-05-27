@@ -44,7 +44,7 @@ class BasicBlock(nn.Module):
     def forward(self, x):
         out = self.select(x)
 
-        out = F.relu(self.bn1(self.conv1(x)))
+        out = F.relu(self.bn1(self.conv1(out)))
         out = self.bn2(self.conv2(out))
 
         residual = self.downsample(x) if self.downsample else x
