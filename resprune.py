@@ -247,7 +247,8 @@ end_mask = cfg_mask[layer_id_in_cfg]
 conv_count = 0
 bn_count = 0
 
-if args.dataset == 'imagenet':
+# if args.dataset == 'imagenet':
+if args.depth == 18:
     downsample = [8, 13, 18]
     last_block = [3, 5, 7, 10, 12, 15, 17, 20]
     for layer_id in range(len(temp)):
