@@ -439,9 +439,9 @@ model = newmodel
 # test(model)
 param = print_model_param_nums(model)
 if args.dataset == 'imagenet':
-    flops = print_model_param_flops(model.cpu(), 224, True)
+    flops = print_model_param_flops(model.cpu(), 224, False)
 else:
-    flops = print_model_param_flops(model.cpu(), 32, True)
+    flops = print_model_param_flops(model.cpu(), 32, False)
 with open(savepath, "w") as fp:
     fp.write("new model param: \n"+str(param)+"\n")
     fp.write("new model flops: \n"+str(flops)+"\n")
